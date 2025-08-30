@@ -108,4 +108,33 @@ This project demonstrates how to integrate a custom AXI-Lite UART IP into a Zynq
     --- Loopback Test Successful! ---
     ```
 If you see this message, the test has passed! If not, check your wiring and ensure you have followed all the steps correctly.
+
+---
+
+## Part 4: Debugging with the ILA
+
+This project includes an Integrated Logic Analyzer (ILA) to monitor the internal signals of the custom UART.
+
+### Step 1: Open Hardware Manager
+
+1.  After generating the bitstream in Vivado (Part 1, Step 2), in the Flow Navigator, click **Open Hardware Manager**.
+2.  Click **Open Target** and select **Auto Connect**. Vivado will connect to your Zybo board.
+
+### Step 2: Program the Device
+
+1.  Click **Program Device**. The bitstream from your project should already be selected. Click **Program**.
+
+### Step 3: Set up the ILA Trigger
+
+1.  After programming, a window showing the ILA core (`hw_ila_1`) and its probes will appear.
+2.  You can set up a trigger to capture data at a specific moment. For example, let's trigger on the start of a transmission.
+    - Find the `debug_tx_dv_0` signal in the trigger setup window.
+    - Set its value to `1` (or `R` for rising edge). This will make the ILA trigger whenever a character is about to be transmitted.
+3.  Arm the trigger by clicking the "Run Trigger" button (the one with the arrow icon).
+
+### Step 4: Capture and View Waveforms
+
+1.  With the ILA armed, run the software test from Vitis (Part 3, Step 2).
+2.  When the trigger condition is met, the ILA will capture the signal data and a waveform window will appear in Vivado.
+3.  You can now analyze the waveforms of the `debug_tx_active`, `debug_tx_dv`, `debug_rx_dv`, and `debug_rx_byte` signals to see your UART in action.
 ```

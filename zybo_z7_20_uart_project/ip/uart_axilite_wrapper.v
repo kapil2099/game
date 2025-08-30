@@ -25,7 +25,13 @@ module uart_axilite_wrapper (
     output            o_txd,
 
     // Interrupt
-    output            interrupt
+    output            interrupt,
+
+    // Debug Ports for ILA
+    output            debug_tx_active,
+    output            debug_tx_dv,
+    output            debug_rx_dv,
+    output      [7:0] debug_rx_byte
 );
 
     // AXI-Lite signals
@@ -158,5 +164,11 @@ module uart_axilite_wrapper (
 
     // Interrupt on rx_dv
     assign interrupt = w_rx_dv;
+
+    // --- Debug assignments ---
+    assign debug_tx_active = w_tx_active;
+    assign debug_tx_dv = r_tx_dv;
+    assign debug_rx_dv = w_rx_dv;
+    assign debug_rx_byte = w_rx_byte;
 
 endmodule

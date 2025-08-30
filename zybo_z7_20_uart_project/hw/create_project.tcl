@@ -21,7 +21,8 @@ file mkdir ${ip_repo_path}
 set_property ip_repo_paths ${ip_repo_path} [current_project]
 update_ip_catalog
 
-ipx::package_project -root_dir ${ip_repo_path}/uart_axilite_1.0 -vendor user.org -library user -taxonomy /User -force
+# Repackage the IP with a new version (1.1) to include debug ports
+ipx::package_project -root_dir ${ip_repo_path}/uart_axilite_1.1 -vendor user.org -library user -taxonomy /User -force
 ipx::add_file ../ip/uart_tx.v [ipx::current_core]
 ipx::add_file ../ip/uart_rx.v [ipx::current_core]
 ipx::add_file ../ip/uart_axilite_wrapper.v [ipx::current_core]
@@ -41,7 +42,7 @@ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_sy
 apply_board_preset "ZYNQ7_PS" [get_bd_cells processing_system7_0]
 
 # Add custom UART IP
-create_bd_cell -type ip -vlnv user.org:user:uart_axilite_wrapper:1.0 uart_axilite_wrapper_0
+create_bd_cell -type ip -vlnv user.org:user:uart_axilite_wrapper:1.1 uart_axilite_wrapper_0
 
 # Connect AXI interface
 apply_bd_automation -rule xilinx.com:bd_rule:processing_system7 -config {
@@ -65,6 +66,16 @@ create_bd_port -dir I -type intr interrupt
 connect_bd_net [get_bd_pins uart_axilite_wrapper_0/interrupt] [get_bd_ports interrupt]
 set_property -dict [list CONFIG.SENSITIVITY {LEVEL_HIGH}] [get_bd_ports interrupt]
 connect_bd_net [get_bd_ports interrupt] [get_bd_pins processing_system7_0/IRQ_F2P]
+
+# --- Add ILA for Debugging ---
+create_bd_cell -type ip -vlnv xilinx.com:ip:ila:6.2 ila_0
+set_property -dict [list CONFIG.C_NUM_OF_PROBES {4} CONFIG.C_PROBE0_WIDTH {1} CONFIG.C_PROBE1_WIDTH {1} CONFIG.C_PROBE2_WIDTH {1} CONFIG.C_PROBE3_WIDTH {8}] [get_bd_cells ila_0]
+
+connect_bd_net [get_bd_pins processing_system7_0/FCLK_CLK0] [get_bd_pins ila_0/clk]
+connect_bd_net [get_bd_pins uart_axilite_wrapper_0/debug_tx_active] [get_bd_pins ila_0/probe0]
+connect_bd_net [get_bd_pins uart_axilite_wrapper_0/debug_tx_dv] [get_bd_pins ila_0/probe1]
+connect_bd_net [get_bd_pins uart_axilite_wrapper_0/debug_rx_dv] [get_bd_pins ila_0/probe2]
+connect_bd_net [get_bd_pins uart_axilite_wrapper_0/debug_rx_byte] [get_bd_pins ila_0/probe3]
 
 # --- Finalize Block Design ---
 regenerate_bd_layout
