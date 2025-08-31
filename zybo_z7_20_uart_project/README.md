@@ -20,30 +20,30 @@ This project demonstrates how to integrate a custom AXI-Lite UART IP into a Zynq
 
 ## Part 1: Hardware Generation in Vivado
 
-### Step 1: Create the Vivado Project
+This new workflow allows you to create the project using the Vivado GUI to avoid any command-line environment issues.
 
-**For Linux users:**
-1.  Open a terminal.
-2.  Navigate to the `hw` directory inside the project folder:
-    ```bash
-    cd zybo_z7_20_uart_project/hw
-    ```
-3.  Run the following command to have Vivado create the project automatically. This may take a few minutes.
-    ```bash
-    vivado -mode batch -source create_project.tcl
-    ```
+### Step 1: Create a New Project in the Vivado GUI
 
-**For Windows users:**
-1.  Open **Command Prompt** or **PowerShell**.
-2.  Navigate to the `hw` directory inside the project folder. You can use `cd` in Windows as well. For example:
-    ```powershell
-    cd C:\\path\\to\\your\\project\\zybo_z7_20_uart_project\\hw
+1.  Launch Vivado.
+2.  From the welcome screen, select **Create Project**.
+3.  Click **Next**. Give your project a name (e.g., `zybo_z7_uart`) and choose a location. Click **Next**.
+4.  Select **RTL Project** and check "Do not specify sources at this time". Click **Next**.
+5.  On the "Default Part" screen, select the **Boards** tab. Find and select `Zybo Z7-20`. If you cannot find it, you have not installed the Digilent board files correctly. Click **Next**.
+6.  Review the summary and click **Finish**. An empty Vivado project will be created.
+
+### Step 2: Run the Block Design Tcl Script
+
+1.  In the bottom panel of the Vivado window, you will see the **Tcl Console**.
+2.  First, you need to change the directory in the Tcl console to the `hw` folder of this project. Use the `cd` command.
+    ```tcl
+    # Use forward slashes for the path, even on Windows
+    cd C:/path/to/your/project/zybo_z7_20_uart_project/hw
     ```
-3.  Run the following command. This assumes that the Vivado bin directory is in your system's PATH environment variable. If not, you may need to run this command from the Vivado installation directory or use the Vivado Tcl Shell.
-    ```powershell
-    vivado -mode batch -source create_project.tcl
+3.  Now, run the provided script by typing the following command into the Tcl Console and pressing Enter:
+    ```tcl
+    source ./create_block_design.tcl
     ```
-    This will create a new Vivado project in the `hw/zybo_z7_20_uart` directory.
+4.  The script will now run and perform all the necessary steps automatically: package the IP, create the block design, connect the components, and add the constraints. This will take a few minutes. You will see "INFO: Script finished successfully" in the console when it is done.
 
 ### Step 2: Build the Hardware Platform
 
