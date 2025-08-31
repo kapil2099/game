@@ -28,7 +28,6 @@ update_ip_catalog
 ipx::create_core user.org user uart_axilite_wrapper 1.1
 
 # Set all metadata using separate, robust set_property commands
-set_property root_dir ${ip_repo_path}/uart_axilite_1.1 [ipx::current_core]
 set_property display_name "AXI Lite UART with ILA" [ipx::current_core]
 set_property description "AXI Lite UART with loopback test and ILA debug signals" [ipx::current_core]
 set_property taxonomy /User [ipx::current_core]
