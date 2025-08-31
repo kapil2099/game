@@ -38,8 +38,8 @@ ipx::add_file "${script_dir}/../ip/uart_tx.v" [ipx::get_file_groups {Verilog Sou
 ipx::add_file "${script_dir}/../ip/uart_rx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
 ipx::add_file "${script_dir}/../ip/uart_axilite_wrapper.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
 
-# Update the compile order to ensure the top module is identified
-ipx::update_compile_order [ipx::current_core]
+# Set the top module for the file group
+set_property top_module {uart_axilite_wrapper} [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
 
 # Infer interfaces and save the IP
 ipx::infer_bus_interface s_axi_aclk s_axi_aclk [ipx::current_core]
