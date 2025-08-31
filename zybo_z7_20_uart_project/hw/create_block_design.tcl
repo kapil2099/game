@@ -24,7 +24,11 @@ file mkdir ${ip_repo_path}
 set_property ip_repo_paths ${ip_repo_path} [current_project]
 update_ip_catalog
 
-ipx::package_project -module_name uart_axilite_wrapper -display_name "AXI Lite UART with ILA" -root_dir ${ip_repo_path}/uart_axilite_1.1 -vendor user.org -library user -taxonomy /User -force
+ipx::package_project -root_dir ${ip_repo_path}/uart_axilite_1.1 -vendor user.org -library user -taxonomy /User -force
+
+# Set properties for the new IP
+set_property display_name "AXI Lite UART with ILA" [ipx::current_core]
+set_property description "AXI Lite UART with loopback test and ILA debug signals" [ipx::current_core]
 ipx::add_file_group {Verilog Source} [ipx::current_core]
 ipx::add_file "${script_dir}/../ip/uart_tx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
 ipx::add_file "${script_dir}/../ip/uart_rx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
