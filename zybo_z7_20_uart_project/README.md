@@ -18,34 +18,62 @@ This project demonstrates how to integrate a custom AXI-Lite UART IP into a Zynq
 
 ---
 
-## Part 1: Hardware Generation in Vivado
+## Part 1: Hardware Generation in Vivado (GUI Workflow)
 
-This new workflow allows you to create the project using the Vivado GUI to avoid any command-line environment issues.
+This section provides a complete, step-by-step guide to creating the hardware platform using only the Vivado Graphical User Interface (GUI). This avoids all scripting issues.
 
-### Step 1: Create a New Project in the Vivado GUI
+### Step 1: Create a New Project
 
 1.  Launch Vivado.
 2.  From the welcome screen, select **Create Project**.
-3.  Click **Next**. Give your project a name (e.g., `zybo_z7_uart`) and choose a location. Click **Next**.
+3.  Click **Next**. Give your project a name (e.g., `zybo_z7_uart_gui`) and choose a location. Click **Next**.
 4.  Select **RTL Project** and check "Do not specify sources at this time". Click **Next**.
-5.  On the "Default Part" screen, select the **Boards** tab. Find and select `Zybo Z7-20`. If you cannot find it, you have not installed the Digilent board files correctly. Click **Next**.
+5.  On the "Default Part" screen, select the **Boards** tab. Find and select `Zybo Z7-20`. Click **Next**.
 6.  Review the summary and click **Finish**. An empty Vivado project will be created.
 
-### Step 2: Run the Block Design Tcl Script
+### Step 2: Package the Custom UART as an IP Core
 
-1.  In the bottom panel of the Vivado window, you will see the **Tcl Console**.
-2.  First, you need to change the directory in the Tcl console to the `hw` folder of this project. Use the `cd` command.
-    ```tcl
-    # Use forward slashes for the path, even on Windows
-    cd C:/path/to/your/project/zybo_z7_20_uart_project/hw
-    ```
-3.  Now, run the provided script by typing the following command into the Tcl Console and pressing Enter:
-    ```tcl
-    source ./create_block_design.tcl
-    ```
-4.  The script will now run and perform all the necessary steps automatically: package the IP, create the block design, connect the components, and add the constraints. This will take a few minutes. You will see "INFO: Script finished successfully" in the console when it is done.
+1.  In the Vivado menu, go to **Tools -> Create and Package New IP**.
+2.  Click **Next**. Select **Package a specified directory**. Click **Next**.
+3.  For "IP Location", browse to the `ip` folder within this project directory (`zybo_z7_20_uart_project/ip`). Click **Next**.
+4.  Vivado will create a new temporary project to manage the packaging. Click **Finish**.
+5.  A new Vivado project window will open for the IP. In the "Package IP" tab at the bottom, you will see several steps.
+6.  Go to the **File Groups** section. Vivado should have automatically added the Verilog files.
+7.  Go to the **Customization Parameters** section. Nothing needs to be done here.
+8.  Go to the **Ports and Interfaces** section. Vivado will analyze the top-level file (`uart_axilite_wrapper.v`) and identify the ports. It should automatically infer the AXI-Lite interface (`s_axi`), the clock (`s_axi_aclk`), and the reset (`s_axi_aresetn`).
+9.  Click **Review and Package**. In the final "Package IP" screen, click **Package IP**. The packager project will close, and you will be returned to your main project. Your new IP is now in the project's IP repository.
 
-### Step 2: Build the Hardware Platform
+### Step 3: Create the Block Design
+
+1.  In the main project window, under the "IP Integrator" section of the Flow Navigator, click **Create Block Design**.
+2.  Give it a name (e.g., `design_1`) and click **OK**.
+3.  A blank block design canvas will open. Click the **+** button to add IP.
+4.  Search for and add the **Zynq7 Processing System**.
+5.  A green bar will appear at the top of the canvas. Click **Run Block Automation**. In the dialog, check "Apply Board Preset" and click **OK**. This configures the Zynq processor for the Zybo board.
+6.  Click the **+** button again. Search for your custom IP, `uart_axilite_wrapper`, and add it to the design.
+7.  Click the **+** button again. Search for and add the **ILA (Integrated Logic Analyzer)** IP.
+8.  Another green bar will appear for "Connection Automation". Click it. Vivado will automatically connect the AXI-Lite interface from the Zynq processor to your custom UART IP. Check the boxes and click **OK**.
+9.  Manually connect the debug signals:
+    -   Hover over the `debug_tx_active` port on the `uart_axilite_wrapper` block and click-and-drag a wire to the `probe0` input of the `ila_0` block.
+    -   Repeat this for the other debug signals (`debug_tx_dv` to `probe1`, `debug_rx_dv` to `probe2`, `debug_rx_byte` to `probe3`).
+10. Manually connect the UART pins and interrupt:
+    -   Right-click on the `i_rxd` pin of your UART IP and select **Create Port**. Name it `i_rxd`.
+    -   Right-click on the `o_txd` pin and select **Create Port**. Name it `o_txd`.
+    -   Drag a wire from the `interrupt` pin of your UART to the `IRQ_F2P[0:0]` pin on the Zynq processor block.
+
+### Step 4: Validate and Create HDL Wrapper
+
+1.  Click the "Validate Design" button (the checkmark icon). You should get a message that validation was successful.
+2.  In the "Sources" panel, right-click on your block design file (`design_1.bd`) and select **Create HDL Wrapper**. Let Vivado manage the wrapper.
+
+### Step 5: Add Constraints
+
+1.  In the "Sources" panel, make sure the "Hierarchy" tab is selected.
+2.  Expand the "Constraints" folder. Right-click on `constrs_1` and select **Add Sources**.
+3.  Choose "Add or create constraints". Click **Next**.
+4.  Click **Add Files**. Navigate to the `hw` folder of this project and select `constraints.xdc`. Click **OK**, then **Finish**.
+
+### Step 6: Build the Hardware Platform
 
 1.  Open the newly created project in Vivado:
     ```
