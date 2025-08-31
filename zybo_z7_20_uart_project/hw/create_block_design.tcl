@@ -24,12 +24,14 @@ file mkdir ${ip_repo_path}
 set_property ip_repo_paths ${ip_repo_path} [current_project]
 update_ip_catalog
 
-# Create a new IP core definition
-ipx::create_core -name uart_axilite_wrapper -version 1.1 -vendor user.org -library user -root_dir ${ip_repo_path}/uart_axilite_1.1 -taxonomy /User
+# Create a new IP core definition using the correct positional syntax
+ipx::create_core user.org user uart_axilite_wrapper 1.1
 
-# Set metadata on the newly created IP core
+# Set all metadata using separate, robust set_property commands
+set_property root_dir ${ip_repo_path}/uart_axilite_1.1 [ipx::current_core]
 set_property display_name "AXI Lite UART with ILA" [ipx::current_core]
 set_property description "AXI Lite UART with loopback test and ILA debug signals" [ipx::current_core]
+set_property taxonomy /User [ipx::current_core]
 
 # Add source files to the new IP core
 ipx::add_file_group {Verilog Source} [ipx::current_core]
