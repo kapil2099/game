@@ -24,15 +24,16 @@ file mkdir ${ip_repo_path}
 set_property ip_repo_paths ${ip_repo_path} [current_project]
 update_ip_catalog
 
-ipx::package_project -root_dir ${ip_repo_path}/uart_axilite_1.1 -vendor user.org -library user -taxonomy /User -force
+# Create a new IP core definition
+ipx::create_core -name uart_axilite_wrapper -version 1.1 -vendor user.org -library user -display_name "AXI Lite UART with ILA" -description "AXI Lite UART with loopback test and ILA debug signals" -root_dir ${ip_repo_path}/uart_axilite_1.1 -taxonomy /User
 
-# Set properties for the new IP
-set_property display_name "AXI Lite UART with ILA" [ipx::current_core]
-set_property description "AXI Lite UART with loopback test and ILA debug signals" [ipx::current_core]
+# Add source files to the new IP core
 ipx::add_file_group {Verilog Source} [ipx::current_core]
 ipx::add_file "${script_dir}/../ip/uart_tx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
 ipx::add_file "${script_dir}/../ip/uart_rx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
 ipx::add_file "${script_dir}/../ip/uart_axilite_wrapper.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
+
+# Set top file, infer interfaces, and save the IP
 set_property top_file {uart_axilite_wrapper.v} [ipx::current_core]
 ipx::infer_bus_interface s_axi_aclk s_axi_aclk [ipx::current_core]
 ipx::infer_bus_interface s_axi_aresetn s_axi_aresetn [ipx::current_core]
