@@ -22,13 +22,25 @@ This project demonstrates how to integrate a custom AXI-Lite UART IP into a Zynq
 
 ### Step 1: Create the Vivado Project
 
-1.  Open a terminal or command prompt.
+**For Linux users:**
+1.  Open a terminal.
 2.  Navigate to the `hw` directory inside the project folder:
     ```bash
     cd zybo_z7_20_uart_project/hw
     ```
 3.  Run the following command to have Vivado create the project automatically. This may take a few minutes.
     ```bash
+    vivado -mode batch -source create_project.tcl
+    ```
+
+**For Windows users:**
+1.  Open **Command Prompt** or **PowerShell**.
+2.  Navigate to the `hw` directory inside the project folder. You can use `cd` in Windows as well. For example:
+    ```powershell
+    cd C:\\path\\to\\your\\project\\zybo_z7_20_uart_project\\hw
+    ```
+3.  Run the following command. This assumes that the Vivado bin directory is in your system's PATH environment variable. If not, you may need to run this command from the Vivado installation directory or use the Vivado Tcl Shell.
+    ```powershell
     vivado -mode batch -source create_project.tcl
     ```
     This will create a new Vivado project in the `hw/zybo_z7_20_uart` directory.
