@@ -21,14 +21,22 @@ file mkdir ${ip_repo_path}
 set_property ip_repo_paths ${ip_repo_path} [current_project]
 update_ip_catalog
 
-# Repackage the IP with a new version (1.1) to include debug ports
-ipx::package_project -root_dir ${ip_repo_path}/uart_axilite_1.1 -vendor user.org -library user -taxonomy /User -force
-ipx::add_file ../ip/uart_tx.v [ipx::current_core]
-ipx::add_file ../ip/uart_rx.v [ipx::current_core]
-ipx::add_file ../ip/uart_axilite_wrapper.v [ipx::current_core]
+# Get the script's directory to resolve relative paths cleanly
+set script_dir [file dirname [file normalize [info script]]]
+
+# Create and package the IP. This approach is more robust.
+ipx::package_project -module_name uart_axilite_wrapper -display_name "AXI Lite UART with ILA" -root_dir ${ip_repo_path}/uart_axilite_1.1 -vendor user.org -library user -taxonomy /User -force
+
+# Add files to a new file group. This fixes the 'file_group' error.
+ipx::add_file_group {Verilog Source} [ipx::current_core]
+ipx::add_file "${script_dir}/../ip/uart_tx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
+ipx::add_file "${script_dir}/../ip/uart_rx.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
+ipx::add_file "${script_dir}/../ip/uart_axilite_wrapper.v" [ipx::get_file_groups {Verilog Source} -of_objects [ipx::current_core]]
+
+# Set top file, infer interfaces, and save
+set_property top_file {uart_axilite_wrapper.v} [ipx::current_core]
 ipx::infer_bus_interface s_axi_aclk s_axi_aclk [ipx::current_core]
 ipx::infer_bus_interface s_axi_aresetn s_axi_aresetn [ipx::current_core]
-set_property top_file {uart_axilite_wrapper.v} [ipx::current_core]
 ipx::update_checksums [ipx::current_core]
 ipx::save_core [ipx::current_core]
 
