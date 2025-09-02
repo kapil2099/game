@@ -128,7 +128,7 @@ This section provides a complete, step-by-step guide to creating the hardware pl
 
 ### Step 1: Physical Setup
 
-1.  **Connect the Loopback:** On the Zybo Z7-20 board, find the **Pmod JA** connector. Use a jumper wire to connect pin 1 (`JA1`) to pin 2 (`JA2`). The `o_txd` signal is on `JA1` and `i_rxd` is on `JA2`.
+1.  **Connect the Loopback:** On the Zybo Z7-20 board, find the **Pmod JA** connector. Use a jumper wire to connect pin 1 (`JA1`, which is pin **N15**) to pin 2 (`JA2`, which is pin **L14**).
 2.  **Connect USB/Power:** Connect your computer to the **JTAG/UART** micro-USB port on the Zybo board. This provides power and a serial connection for the standard output.
 3.  Power on the board.
 
